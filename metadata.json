@@ -1,0 +1,6 @@
+{
+  "name": "智慧电商与门店系统",
+  "description": "实体门店线上推广与家电在线订购商城，支持多门店配置、超级管理后台、推广合伙人佣金积分、积分转赠、送装一体及全流程订单管理",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
