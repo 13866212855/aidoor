@@ -192,6 +192,8 @@ function StorePageContent() {
       return (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0);
     });
 
+  const isChildTenant = !!urlTenant && urlTenant !== 'default';
+
   const totalCartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalCartPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -200,18 +202,23 @@ function StorePageContent() {
       {/* 顶部主导航 */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
-          {/* 左侧：实体门店切换器 */}
-          {urlTenant && urlTenant !== 'default' ? (
-            <div className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-50 border border-slate-200 max-w-[210px] sm:max-w-md">
-              <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+          {/* 左侧：实体门店标识 / 门店切换器 */}
+          {isChildTenant ? (
+            <div className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-50 border border-slate-200 max-w-[260px] sm:max-w-md">
+              <div className="w-8 h-8 rounded-lg bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs">
                 <Store className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <div className="text-xs sm:text-sm font-bold text-slate-900 truncate">
-                  {currentTenant?.name || '子门店'}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs sm:text-sm font-bold text-slate-900 truncate">
+                    {currentTenant?.name || '官方授权专卖店'}
+                  </span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 shrink-0">
+                    官方直营
+                  </span>
                 </div>
-                <span className="text-[10px] text-emerald-700 font-medium truncate block">
-                  特许分店专享首页 · tenant={urlTenant}
+                <span className="text-[10px] text-slate-500 font-medium truncate block">
+                  实体展厅直发 · 全国联保 · 免费送装入户
                 </span>
               </div>
             </div>
@@ -238,29 +245,54 @@ function StorePageContent() {
             </button>
           )}
 
-          {/* 右侧：合伙人中心、后台入口与购物车按钮 */}
+          {/* 右侧：操作区 */}
           <div className="flex items-center gap-2">
-            <button
-              id="btn-promoter-center"
-              type="button"
-              onClick={() => setIsPromoterModalOpen(true)}
-              className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200 flex items-center gap-1.5 transition-colors cursor-pointer"
-              title="查看专属推广码、佣金积分与转赠亲友"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-              <span className="hidden sm:inline">合伙人中心</span>
-              <span className="sm:hidden">合伙人</span>
-            </button>
+            {/* 子租户专属官方服务保障与到店咨询：不展示“合伙人中心”和“子租户后台”，更显品牌官方权威 */}
+            {isChildTenant ? (
+              <div className="flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-semibold">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>正品全国联保</span>
+                </div>
+                {currentTenant?.phone && (
+                  <a
+                    id="link-tenant-phone"
+                    href={`tel:${currentTenant.phone}`}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
+                    title="拨打门店服务热线"
+                  >
+                    <Phone className="w-3.5 h-3.5 text-rose-500" />
+                    <span className="hidden sm:inline">门店咨询</span>
+                    <span className="sm:hidden">咨询</span>
+                  </a>
+                )}
+              </div>
+            ) : (
+              /* 仅在超级主平台展示管理入口与合伙人中心 */
+              <>
+                <button
+                  id="btn-promoter-center"
+                  type="button"
+                  onClick={() => setIsPromoterModalOpen(true)}
+                  className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="查看专属推广码、佣金积分与转赠亲友"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                  <span className="hidden sm:inline">合伙人中心</span>
+                  <span className="sm:hidden">合伙人</span>
+                </button>
 
-            <Link
-              id="link-to-admin"
-              href={urlTenant ? `/admin?tenant=${encodeURIComponent(urlTenant)}` : '/admin'}
-              className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <Lock className="w-3.5 h-3.5 text-slate-500" />
-              <span className="hidden sm:inline">{urlTenant ? `子租户后台(${urlTenant})` : '超级管理后台'}</span>
-              <span className="sm:hidden">{urlTenant ? '分店管理' : '管理'}</span>
-            </Link>
+                <Link
+                  id="link-to-admin"
+                  href="/admin"
+                  className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Lock className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="hidden sm:inline">超级管理后台</span>
+                  <span className="sm:hidden">管理</span>
+                </Link>
+              </>
+            )}
 
             <button
               id="btn-header-cart"
@@ -554,6 +586,83 @@ function StorePageContent() {
           </div>
         )}
       </main>
+
+      {/* 官方商城底部服务保障与门店资质信息 */}
+      <footer className="mt-14 bg-white border-t border-slate-200 pt-10 pb-16 text-slate-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          {/* 四大服务保障 */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 pb-8 border-b border-slate-100">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs sm:text-sm font-bold text-slate-900">100% 正品行货</div>
+                <div className="text-[11px] text-slate-500">原厂品质 全国联保</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <Truck className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs sm:text-sm font-bold text-slate-900">专业送装同步</div>
+                <div className="text-[11px] text-slate-500">实体仓直发 送货+安装</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <Store className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs sm:text-sm font-bold text-slate-900">实体展厅验机</div>
+                <div className="text-[11px] text-slate-500">真机体验 线上线下同权</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                <Zap className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs sm:text-sm font-bold text-slate-900">节能补贴直减</div>
+                <div className="text-[11px] text-slate-500">国家一级能效 享高额补贴</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 门店官方信息与联系方式 */}
+          <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-slate-500">
+            <div className="space-y-1.5 text-center md:text-left">
+              <div className="text-sm font-bold text-slate-900 flex items-center justify-center md:justify-start gap-2">
+                <span>{currentTenant?.name || '品牌授权官方专卖店'}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">
+                  官方正品授权店
+                </span>
+              </div>
+              <p>门店展厅地址：{currentTenant?.address || '官方实体直营展厅'}</p>
+              <p>门店服务时间：{currentTenant?.business_hours || '周一至周日 09:00 - 21:00（节假日无休）'}</p>
+            </div>
+
+            <div className="flex flex-col items-center md:items-end gap-1.5 shrink-0">
+              {currentTenant?.phone && (
+                <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
+                  <Phone className="w-4 h-4 text-rose-600" />
+                  <a href={`tel:${currentTenant.phone}`} className="hover:text-rose-600 transition-colors">
+                    {currentTenant.phone}
+                  </a>
+                </div>
+              )}
+              <div className="text-[11px] text-slate-400">
+                全国联保服务专线 · 7×24小时实体专席导购
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-slate-100 text-center text-[11px] text-slate-400">
+            © {new Date().getFullYear()} {currentTenant?.name || '家电官方体验店'} 官方版权所有 · 实体门店线上专属展厅
+          </div>
+        </div>
+      </footer>
 
       {/* 底部悬浮购物车栏（在有商品时吸底呈现） */}
       {totalCartCount > 0 && (
