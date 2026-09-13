@@ -325,7 +325,7 @@ function StorePageContent() {
                 {promoterCode && !isChildTenant && (
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-600/90 text-white text-xs font-semibold shadow-xs">
                     <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    <span>合伙人专属推荐 · 推荐码: {promoterCode}</span>
+                    <span>专属推荐礼遇 · 推荐码: {promoterCode}</span>
                   </div>
                 )}
               </div>

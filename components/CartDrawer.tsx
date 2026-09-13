@@ -71,8 +71,9 @@ export default function CartDrawer({
   }
 
   const [promoterInfo, setPromoterInfo] = useState<{ name: string; role?: string } | null>(null);
+  const [verifyingPromoter, setVerifyingPromoter] = useState(false);
 
-  // 自动根据 initialPromoterId 静默加载合伙人归属（若有推广链接带入）
+  // 自动根据 initialPromoterId 校验合伙人
   React.useEffect(() => {
     if (!initialPromoterId) return;
     let active = true;
@@ -87,15 +88,42 @@ export default function CartDrawer({
         }
       })
       .catch(() => {
-        // 静默处理
+        // 静默处理自动加载推荐人异常
       });
     return () => {
       active = false;
     };
   }, [initialPromoterId, tenant.id]);
 
+  const verifyPromoter = async (code: string) => {
+    if (!code || !code.trim()) return;
+    setVerifyingPromoter(true);
+    try {
+      const res = await fetch(`/api/users?phone=${encodeURIComponent(code.trim())}&tenant=${tenant.id}`);
+      const data = await res.json();
+      if (data.user) {
+        setPromoterInfo({
+          name: data.user.name,
+          role: data.user.role === 'gold_promoter' ? '金牌推广员' : data.user.role === 'promoter' ? '推广合伙人' : '会员',
+        });
+      } else {
+        alert('未找到该推荐人信息，请核对手机号或邀请码');
+      }
+    } catch {
+      console.warn('校验推荐人失败');
+    } finally {
+      setVerifyingPromoter(false);
+    }
+  };
+
   const totalItemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const rawTotalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  // 预估产生推广佣金积分
+  const estimatedCommissionPoints = items.reduce((sum, item) => {
+    const rate = typeof item.commission_rate === 'number' ? item.commission_rate : 1.0;
+    return sum + Math.round(item.price * item.quantity * (rate / 100));
+  }, 0);
 
   // 积分换算规则：100积分抵扣1元
   const maxDiscountFromPoints = memberPoints ? Math.min(Math.floor(memberPoints / 100), Math.floor(rawTotalPrice * 0.1)) : 0;
@@ -444,19 +472,14 @@ export default function CartDrawer({
                     <div className="flex items-center gap-1.5 text-slate-800">
                       <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                       <span>
-                        身份：
+                        会员身份：
                         <strong className="text-slate-900">
-                          {memberRole === 'gold_promoter' ? '👑 金牌合伙人' : memberRole === 'promoter' ? '⭐ 推广合伙人' : '普通会员'}
+                          {memberRole === 'gold_promoter' || memberRole === 'promoter' ? '尊享VIP会员' : '注册会员'}
                         </strong>
                       </span>
                     </div>
                     <div className="text-[11px] text-slate-600 flex items-center gap-2">
-                      <span>消费积分: <strong className="text-amber-600">{memberPoints}</strong></span>
-                      {memberCommissionPoints !== null && memberCommissionPoints > 0 && (
-                        <span className="text-purple-700 font-medium">
-                          佣金积分: <strong>{memberCommissionPoints}</strong>
-                        </span>
-                      )}
+                      <span>可用抵扣积分: <strong className="text-amber-600">{memberPoints}</strong></span>
                     </div>
                   </div>
                 )}
