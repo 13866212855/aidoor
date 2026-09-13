@@ -24,6 +24,7 @@ import CartDrawer from '@/components/CartDrawer';
 import StorePickerModal from '@/components/StorePickerModal';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
 import PromoterModal from '@/components/PromoterModal';
+import OptimizedImage from '@/components/OptimizedImage';
 import Link from 'next/link';
 
 const CATEGORIES = ['全部', '空调制冷', '冰洗大电', '智慧影音', '厨卫电器', '智能生活'];
@@ -321,7 +322,7 @@ function StorePageContent() {
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>实体门店线上推广 · 官方直营保真 · 节能补贴立省15%</span>
                 </div>
-                {promoterCode && (
+                {promoterCode && !isChildTenant && (
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-600/90 text-white text-xs font-semibold shadow-xs">
                     <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                     <span>合伙人专属推荐 · 推荐码: {promoterCode}</span>
@@ -491,22 +492,25 @@ function StorePageContent() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-5">
-            {filteredProducts.map((product) => (
+            {filteredProducts.map((product, index) => (
               <div
                 key={product.id}
                 id={`card-product-${product.id}`}
                 className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all flex flex-col overflow-hidden group"
               >
-                {/* 封面图片 */}
+                {/* 封面图片：极速渐进式渲染与 WebP 适屏加速 */}
                 <div 
                   className="relative aspect-4/3 bg-slate-100 overflow-hidden cursor-pointer"
                   onClick={() => setSelectedProduct(product)}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <OptimizedImage
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+                    category={product.category}
+                    priority={index < 2}
+                    width={450}
+                    quality={65}
+                    className="group-hover:scale-103 transition-transform duration-300"
                   />
                   {/* 能效角标 */}
                   <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1">

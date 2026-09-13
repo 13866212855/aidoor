@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/link-chunks.js",
     "start": "next start",
     "lint": "eslint .",
-    "clean": "next clean"
+    "clean": "next clean",
+    "postinstall": "node scripts/patch-next.js"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

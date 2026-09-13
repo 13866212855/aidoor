@@ -1,0 +1,6 @@
+{
+  "/api/tenants/route": "app/api/tenants/route.js",
+  "/api/orders/route": "app/api/orders/route.js",
+  "/page": "app/page.js",
+  "/admin/page": "app/admin/page.js"
+}

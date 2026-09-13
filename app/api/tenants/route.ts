@@ -24,10 +24,17 @@ export async function GET(req: NextRequest) {
     const tenants = await getAllTenants(accessibleTenantId);
     const currentTenantId = accessibleTenantId || getTenantIdFromRequest(req);
 
-    return NextResponse.json({
-      tenants: tenants || [],
-      currentTenantId,
-    });
+    return NextResponse.json(
+      {
+        tenants: tenants || [],
+        currentTenantId,
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=30, stale-while-revalidate=300',
+        },
+      }
+    );
   } catch (err) {
     console.error('API /api/tenants error:', err);
     return NextResponse.json({

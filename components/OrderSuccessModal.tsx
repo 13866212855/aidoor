@@ -3,6 +3,7 @@
 import React from 'react';
 import { CheckCircle, Phone, MapPin, Calendar, Clock, ShoppingBag, X, QrCode } from 'lucide-react';
 import { StoreOrder, Tenant } from '@/lib/types';
+import { getOptimizedImageUrl } from '@/lib/imageUtils';
 
 interface OrderSuccessModalProps {
   order: StoreOrder | null;
@@ -110,8 +111,10 @@ export default function OrderSuccessModal({ order, tenant, onClose }: OrderSucce
               <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-emerald-100">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={tenant.payment_qrcode || tenant.qrcode_image}
+                  src={getOptimizedImageUrl(tenant.payment_qrcode || tenant.qrcode_image, 250, 75)}
                   alt="门店专属收款码"
+                  loading="lazy"
+                  decoding="async"
                   className="w-20 h-20 rounded-md object-contain bg-slate-50 border border-slate-200 shrink-0"
                 />
                 <div className="text-[11px] text-slate-600 space-y-1">

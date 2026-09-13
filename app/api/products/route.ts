@@ -14,7 +14,14 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search') || undefined;
 
     const products = await getProducts(tenantId, category, search);
-    return NextResponse.json({ products: products || [], tenantId });
+    return NextResponse.json(
+      { products: products || [], tenantId },
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=15, stale-while-revalidate=120',
+        },
+      }
+    );
   } catch (err) {
     console.error('API /api/products error:', err);
     return NextResponse.json({

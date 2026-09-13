@@ -104,7 +104,7 @@ const DEFAULT_PRODUCTS: ApplianceProduct[] = [
     original_price: 3899,
     category: '空调制冷',
     description: '40m³/h 微正压独立双向大新风系统，自清洁柔风微孔防直吹，APF 5.30 超一级能效，手机APP远程智控。',
-    image: 'https://images.unsplash.com/photo-1614633833026-07204561081e?w=600&auto=format&fit=crop&q=80',
+    image: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=450&auto=format&fit=crop&q=65&fm=webp',
     status: 1,
     energy_grade: '一级能效',
     specs: [
@@ -277,7 +277,7 @@ const DEFAULT_ORDERS: StoreOrder[] = [
         productId: 'prod-ac-01',
         name: '智能新风变频冷暖无风感壁挂式空调',
         price: 3299,
-        image: 'https://images.unsplash.com/photo-1614633833026-07204561081e?w=600&auto=format&fit=crop&q=80',
+        image: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=450&auto=format&fit=crop&q=65&fm=webp',
         category: '空调制冷',
         specName: '大1.5匹 (适用15-23㎡)',
         services: ['官方专业送装一体', '整机6年免费包修'],

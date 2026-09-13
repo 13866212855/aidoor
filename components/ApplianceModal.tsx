@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Check, Shield, Truck, Zap, ShoppingBag, Plus, Minus, Sparkles } from 'lucide-react';
+import { X, Check, Shield, Truck, Zap, ShoppingBag, Plus, Minus } from 'lucide-react';
 import { ApplianceProduct, ApplianceSpec, CartItem } from '@/lib/types';
+import OptimizedImage from './OptimizedImage';
 
 interface ApplianceModalProps {
   product: ApplianceProduct | null;
@@ -69,11 +70,13 @@ export default function ApplianceModal({ product, onClose, onAddToCart }: Applia
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5">
           {/* 商品封面与能效徽章 */}
           <div className="relative aspect-16/10 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <OptimizedImage
               src={product.image}
               alt={product.name}
-              className="w-full h-full object-cover"
+              category={product.category}
+              priority={true}
+              width={600}
+              quality={70}
             />
             <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
               <span className="px-2.5 py-1 rounded-md bg-emerald-600 text-white text-xs font-semibold shadow-xs flex items-center gap-1">
@@ -100,10 +103,6 @@ export default function ApplianceModal({ product, onClose, onAddToCart }: Applia
               )}
               <span className="px-2 py-0.5 rounded bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
                 线下门店体验同价 · 享以旧换新补贴
-              </span>
-              <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-amber-600" />
-                合伙人返佣: {product.commission_rate ?? 1}% (约 {Math.round(currentPrice * ((product.commission_rate ?? 1) / 100))} 积分/台)
               </span>
             </div>
             <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug">

@@ -19,6 +19,32 @@ export const metadata: Metadata = {
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="zh-CN">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (typeof window !== 'undefined') {
+                  var origError = console.error;
+                  console.error = function() {
+                    for (var i = 0; i < arguments.length; i++) {
+                      var arg = arguments[i];
+                      if (typeof arg === 'string' && arg.toLowerCase().indexOf('fetchpriority') !== -1) {
+                        return;
+                      }
+                    }
+                    return origError.apply(console, arguments);
+                  };
+                }
+              })();
+            `,
+          }}
+        />
+        {/* 微信内置浏览器网络加速与预连接 */}
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <meta name="format-detection" content="telephone=no" />
+      </head>
       <body suppressHydrationWarning>{children}</body>
     </html>
   );
